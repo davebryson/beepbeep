@@ -1,0 +1,76 @@
+BeepBeep is a simple Web Application framework for Erlang inspired by Rails and Merb. It follows the 
+principle of convention over configuration - meaning if you follow the code structure layout and a few
+rules when building your app, it'll require no extra work on you behalf to map Url requests to your 
+Controllers and Views.
+
+BeepBeep is built on MochiWeb ( http://code.google.com/p/mochiweb/) 
+and ErlyDTL ( http://code.google.com/p/erlydtl ), providing a super fast web server and
+the abiity to define your templates with the Django template language.
+
+Features
+	
+  - A Script to generate a new web application (based on mochiweb's approach)
+  - Session Server to store your application state
+  - Before filter on your controllers for things like authentication 
+  - Django templates for the view
+
+Getting Started
+
+ - Download the code
+ - CD into the beepbeep directory
+ - run make
+ - Next, generate a new web application by running  ./script/new_beep.erl YouAppName "DestinationDirectory
+
+This will create a web app with everything you need. It includes a Sample controller (main_controller.erl).
+To run the sample:
+ - Cd into the new application's directory you created above and start the server: ./start-server.sh
+ - Open a browser and visit "http://localhost:8000
+
+How it works:
+You write a controller similar to how you'd write a "gen_server" based app, but in our
+case you use the included "gen_controller" behavior. In the controller you define the functions
+you want to expose to requests.  BeepBeep will automatically map Url requests to controller and
+functions (or actions). For example a request to "/hello/show" would map to the "hello_controller" 
+and invoke the "show" function. 
+
+Here's a controller example:
+
+%% hello_controller.erl
+-module(hello_controller).
+
+-export([index/1]).
+-export([handle_request/2, before_filter/1]).
+
+-behaviour(gen_controller).
+-include("beepbeep.hrl").
+
+show(Params) ->
+    gen_controller:call(?MODULE,index,Params).
+
+%% Callback for show
+handle_request(show,Params) ->
+    Data = [{name,"BeepBeep"}],
+    {render, "hello/show.html",[{data,Data}],Params}.
+
+
+From "handle_request" we return a tuple that tells the framework what template to use. Templates
+are located in the template directory. In our example we'ill use the template located in the 
+subdirectory "hello" and the file "show.html"
+
+Here's an example of the "show.html" template:
+
+<h2>Hello from {{ data }} </h2>
+
+Which will result in:
+<h2>Hello from BeepBeep</h2>
+ 
+The "data" key set in the controller is passed to the template and expanded using the Django format
+via erlyDTL.
+
+This approach provides a clean separation of the erlang logic in the controller and the html code in
+the template.
+
+More to come...
+
+
+  
