@@ -42,7 +42,7 @@ Here's a controller example:
 %% hello_controller.erl
 -module(hello_controller).
 
--export([index/1]).
+-export([show/1]).
 -export([handle_request/2, before_filter/1]).
 
 -behaviour(gen_controller).
