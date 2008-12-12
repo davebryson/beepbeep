@@ -55,6 +55,12 @@ show(Params) ->
 handle_request(show,Params) ->
     Data = [{name,"BeepBeep"}],
     {render, "hello/show.html",[{data,Data}],Params}.
+
+
+%% Callback filter hook
+before_filter(Params) ->
+    {ok}.
+
  </code>
 </pre>
 
