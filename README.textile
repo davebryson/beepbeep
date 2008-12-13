@@ -53,8 +53,7 @@ show(Params) ->
 
 %% Callback for show
 handle_request(show,Params) ->
-    Data = [{name,"BeepBeep"}],
-    {render, "hello/show.html",[{data,Data}],Params}.
+    {render, "hello/show.html",[{name,"BeepBeep"}],Params}.
 
 
 %% Callback filter hook
@@ -78,7 +77,8 @@ Which will result in:
 <pre><code>
 <h2>Hello from BeepBeep</h2>
 </code></pre> 
-The "data" key set in the controller is passed to the template and expanded using the Django format
+
+The "name" key set in the controller is passed to the template and expanded using the Django format
 via erlyDTL.
 
 This approach provides a clean separation of the erlang logic in the controller and the html code in
