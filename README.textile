@@ -24,8 +24,11 @@ h3. Getting Started
 
 This will create a web app with everything you need. It includes a Sample controller (main_controller.erl).
 To run the sample:
- * Cd into the new application's directory you created above and start the server: ./start-server.sh
- * Open a browser and visit "http://localhost:8000
+
+ # cd into the new application's directory you created above
+ # Run make to compile the new project
+ # Start the server: ./start-server.sh
+ # Open a browser and visit "http://localhost:8000
 
 h3. How it works:
 
