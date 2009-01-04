@@ -9,7 +9,8 @@
 
 %% External API
 
-skelcopy(DestDir, Name) ->
+skelcopy(DestDir, InName) ->
+    Name = string:to_lower(InName),
     ok = ensuredir(DestDir),
     LDst = case length(filename:dirname(DestDir)) of 
                1 -> %% handle case when dirname returns "/"
