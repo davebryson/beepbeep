@@ -1,13 +1,14 @@
-
 %% Session Id key
--define(SID,"_beepbeep_session_id").
+-define(BEEPBEEP_SID, "_beepbeep_session_id_").
 
-%% Holds parameter information passes around
--record(params,{
-	  controller,
-	  action,
-	  id,
-	  method,
-	  data, %% Query and Post Data
- 	  sid   %% Session Id
-	 }).
+%% Environment data
+-define(BEEPBEEP_ENV_DATA, [{server_sw, "SERVER_SOFTWARE"},
+			    {server_name, "SERVER_NAME"},
+			    {server_protocol, "SERVER_PROTOCOL"},
+			    {server_port, "SERVER_PORT"},
+			    {method, "REQUEST_METHOD"},
+			    {content_type, "CONTENT_TYPE"},
+			    {content_length,"CONTENT_LENGTH"},
+			    {path_info, "PATH_INFO"},
+			    {remote_addr, "REMOTE_ADDR"},
+			    {beepbeep_params, "beepbeep.data"}]).

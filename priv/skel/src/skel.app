@@ -5,6 +5,7 @@
     skel,
     skel_app,
     skel_sup,
+    skel_web,
     skel_deps
   ]},
   {registered, []},

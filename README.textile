@@ -32,48 +32,50 @@ To run the sample:
 
 h3. How it works:
 
-You write a controller similar to how you'd write a "gen_server" based app, but in our
-case you use the included "gen_controller" behavior. In the controller you define the functions
-you want to expose to requests.  BeepBeep will automatically map Url requests to controller and
-functions (or actions). For example a request to "/hello/show" would map to the "hello_controller" 
-and invoke the "show" function. 
+You write a controller with a set of method that look like this:
 
-Here's a controller example:
+handle_request(Action,Params)
+
+where Action is a string that will match to request in the Url and
+Params is an Array of optional parameters.
+
+BeepBeep will automatically map Url requests to controller and functions (or actions). For example a request to "/hello/show" would map to the "hello_controller" 
+and invoke the "handle_request("show",[])" function. 
+
+Here's anexample:
 
 <pre>
  <code>
 %% hello_controller.erl
 -module(hello_controller).
 
--export([show/1]).
--export([handle_request/2, before_filter/1]).
+-export([handle_request/2, before_filter/0]).
 
--behaviour(gen_controller).
--include("beepbeep.hrl").
+%% Maps to http://localhost:8000/hello/show
+handle_request("show",[]) ->
+    {render, "hello/show.html",[{name,"BeepBeep"}]};
 
-show(Params) ->
-    gen_controller:call(?MODULE,index,Params).
-
-%% Callback for show
-handle_request(show,Params) ->
-    {render, "hello/show.html",[{name,"BeepBeep"}],Params}.
-
+%% Maps to http://localhost:8000/hello/feed/2007
+handle_request("feed",[Year]) ->
+    %% Now Year contains the value 2007
+    {render,"hello/feed.html",[{year,Year}]}.
+  
 
 %% Callback filter hook
 before_filter(Params) ->
-    {ok}.
+    ok.
 
  </code>
 </pre>
 
 From "handle_request" we return a tuple that tells the framework what template to use. Templates
-are located in the template directory. In our example we'ill use the template located in the 
+are located in the template directory. In our example we'll use the template located in the 
 subdirectory "hello" and the file "show.html"
 
 Here's an example of the "show.html" template:
 
 <pre><code>
-<h2>Hello from {{ data }} </h2>
+<h2>Hello from {{ name }} </h2>
 </code></pre>
 
 Which will result in:
@@ -86,5 +88,9 @@ via erlyDTL.
 
 This approach provides a clean separation of the erlang logic in the controller and the html code in
 the template.
+
+You can also implement the before_filter to check requests before the matching "handle_request" is
+called.  Filters that pass should simply return the atom ok, otherwise they should return one
+of the request responses such as {render...} or {redirect..." 
 
 More to come...

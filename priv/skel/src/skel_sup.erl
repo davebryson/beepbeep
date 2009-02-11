@@ -1,10 +1,4 @@
-%% @author author <author@example.com>
-%% @copyright YYYY author.
-
-%% @doc Supervisor for the skel application.
-
 -module(skel_sup).
--author('author <author@example.com>').
 
 -behaviour(supervisor).
 
@@ -43,17 +37,21 @@ upgrade() ->
 init([]) ->
     Ip = case os:getenv("MOCHIWEB_IP") of false -> "0.0.0.0"; Any -> Any end,   
     WebConfig = [
-         {ip, Ip},
-                 {port, 8000},
-                 {docroot, skel_deps:local_path(["priv", "www"])}],
+		 {ip, Ip},
+                 {port, 8000}
+                ],
+
+    BaseDir = skel_deps:get_base_dir(),
     
     Web = {skel_web,
 	   {skel_web, start, [WebConfig]},
 	   permanent, 5000, worker, dynamic},
-    
+    Router = {beepbeep_router,
+	      {beepbeep_router, start, [BaseDir]},
+	      permanent, 5000, worker, dynamic},
     SessionServer = {beepbeep_session_server,
 		     {beepbeep_session_server,start,[]},
 		     permanent, 5000, worker, dynamic},
     
-    Processes = [Web,SessionServer],
+    Processes = [Router,SessionServer,Web],
     {ok, {{one_for_one, 10, 10}, Processes}}.
