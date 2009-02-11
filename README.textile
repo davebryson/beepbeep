@@ -32,17 +32,20 @@ To run the sample:
 
 h3. How it works:
 
-You write a controller with a set of method that look like this:
-
+You write a controller with a set of methods that look like this:
+<pre>
+<code>
 handle_request(Action,Params)
+</code>
+</pre>
 
-where Action is a string that will match to request in the Url and
-Params is an Array of optional parameters.
+where Action is a string that will match to the request in the Url and
+Params is an Array of optional parameters that will be passed to variables
+in your controller.
 
-BeepBeep will automatically map Url requests to controller and functions (or actions). For example a request to "/hello/show" would map to the "hello_controller" 
-and invoke the "handle_request("show",[])" function. 
+BeepBeep will automatically map Url requests to controller and functions (or actions). For example a request to "/hello/show" would map to the "hello_controller" and invoke the "handle_request("show",[])" function. 
 
-Here's anexample:
+Here's an example:
 
 <pre>
  <code>
@@ -68,8 +71,8 @@ before_filter(Params) ->
  </code>
 </pre>
 
-From "handle_request" we return a tuple that tells the framework what template to use. Templates
-are located in the template directory. In our example we'll use the template located in the 
+From "handle_request" we return a tuple that tells the framework what view to use. Views
+are located in the views directory. In our example we'll use the view located in the 
 subdirectory "hello" and the file "show.html"
 
 Here's an example of the "show.html" template:
