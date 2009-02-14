@@ -1,9 +1,12 @@
-%%%-------------------------------------------------------------------
-%%% Description : Maintains session information for the client. All data is stored
-%%% on the server. Only a unique session id is exchanged with the client.
-%%% Inspired by the Yaws Session Server.
-%%%
-%%%-------------------------------------------------------------------
+%% @author Dave Bryson [http://weblog.miceda.org]
+%% @copyright Dave Bryson 2008-2009
+%% @hidden
+%%-------------------------------------------------------------------
+%% Description : Maintains session information for the client. All data is stored
+%% on the server. Only a unique session id is exchanged with the client.
+%% Inspired by the Yaws Session Server.
+%%
+%%-------------------------------------------------------------------
 -module(beepbeep_session_server).
 -author('Dave Bryson <http://weblog.miceda.org>').
 

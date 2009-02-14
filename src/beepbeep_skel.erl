@@ -1,9 +1,8 @@
--module(beepbeep_skel).
-
-
 %% This is a direct copy of mochiweb_skel I've only changed a few 
 %% things for my purposes
+%% @hidden
 
+-module(beepbeep_skel).
 -export([skelcopy/2]).
 -include_lib("kernel/include/file.hrl").
 

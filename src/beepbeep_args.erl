@@ -1,50 +1,94 @@
+%% @author Dave Bryson [http://weblog.miceda.org]
+%% @copyright Dave Bryson 2008-2009
 %%
-%% Main BeepBeep API to use in Controllers
+%% @doc Helper functions for accessing request and session information
+%% in your controllers. 
 %%
 -module(beepbeep_args).
--compile(export_all).
+-export([path/1,
+	 path_components/1,
+	 server_software/1,
+	 server_name/1,
+	 server_protocol/1,
+	 server_port/1,
+	 method/1,
+	 content_type/1,
+	 content_length/1,
+	 remote_addr/1,
+	 get_all_headers/1,
+	 get_param/2,
+	 get_session_id/1,
+	 set_session_id/2,
+	 set_session_data/3,
+	 get_session_data/2,
+	 get_all_session_data/1,
+	 get_action/1,
+	 set_action/2]).
 -author('Dave Bryson <http://weblog.miceda.org>').
 
-%% @spec path(Env) -> Path
-%% @doc return the path
+%%
+%% @doc Return the Path
+%% 
 path(Env) ->
     proplists:get_value("PATH_INFO",Env).
 
-%% @spec path_components(Env) -> []
-%% @doc return the path as an array parsed on the "/"
+%%
+%% @doc Return the Path as an array parsed on the "/"
+%%
 path_components(Env) ->
     string:tokens(path(Env),"/").
 
-%% @spec server_software(Env) -> ServerSoftware
-%% @doc return the name of the server
+%%
+%% @doc Return the name of the server
+%%
 server_software(Env) ->
     proplists:get_value("SERVER_SOFTWARE", Env).
 
-%% @spec server_name(Env) -> ServerName
-%% @doc return the hostname of the server
+%%
+%% @doc Return the hostname of the server
+%%
 server_name(Env) ->
     proplists:get_value("SERVER_NAME", Env).
 
-%% @spec server_protocol(Env) -> ServerProtocol
-%% @doc return the protocol i.e. http
+%%
+%% @doc Return the protocol
+%%
 server_protocol(Env) ->
     proplists:get_value("SERVER_PROTOCOL", Env).
 
+%%
+%% @doc Return the Server port
+%%
 server_port(Env) ->
     proplists:get_value("SERVER_PORT", Env).
 
+%%
+%% @doc Return the request method: GET,PUT,POST,DELETE
+%%
 method(Env) ->
     proplists:get_value("REQUEST_METHOD", Env).
 
+%% 
+%% @doc Return the content-type
+%%
 content_type(Env) ->
     proplists:get_value("CONTENT_TYPE", Env).
 
+%%
+%% @doc Return the content_length
+%%
 content_length(Env) ->
     proplists:get_value("CONTENT_LENGTH", Env).
 
+%%
+%% @doc Return the Remote address of the client
+%%
 remote_addr(Env) ->
     proplists:get_value("REMOTE_ADDR", Env).
 
+%%
+%% @doc Return all Headers
+%%
 get_all_headers(Env) ->
     lists:foldl(fun({"HTTP_" ++ _, _}=Pair, Hdrs) ->
                         [Pair|Hdrs];
@@ -52,13 +96,25 @@ get_all_headers(Env) ->
                         Hdrs
                 end, [], Env).
 
+%% 
+%% @doc Return a request Value for a given Key. This contains information
+%% from a form POST OR GET query string
+%%
 get_param(Key,Env) ->
     Params = proplists:get_value("beepbeep.data",Env),
     proplists:get_value(Key,Params,"?").
 
+%%
+%% @doc Get the current session id
+%%
 get_session_id(Env) ->
     proplists:get_value("beepbeep_sid",Env).
 
+%% 
+%% Sets the session id. This is done internally
+%% and should not be used manually
+%% @hidden
+%%  
 set_session_id(Value,Env) ->
     case lists:keysearch("beepbeep_sid",1,Env) of
 	{value,_} ->
@@ -67,18 +123,37 @@ set_session_id(Value,Env) ->
 	    [proplists:property({"beepbeep_sid", Value})|Env]
     end.
 
-%% Helpers for accessing Session Data
-set_session_data(Env,Key,Value) ->
+%% 
+%% @doc Set a Key,Value in the session
+%%
+set_session_data(Key,Value,Env) ->
     Sid = get_session_id(Env),
     beepbeep_session_server:set_session_data(Sid,Key,Value).
 
-get_session_data(Env) ->
+%%
+%% @doc Return all session data
+%%
+get_all_session_data(Env) ->
     Sid = get_session_id(Env),
     beepbeep_session_server:get_session_data(Sid).
 
+%%
+%% @doc Get the session data for a given key
+%%
+get_session_data(Key,Env) ->
+    proplists:get_value(Key,get_all_session_data(Env)).
+
+%%
+%% @doc Return the current requested action
+%%
 get_action(Env) ->
     proplists:get_value("action_name",Env).
 
+%%
+%% @doc Warning! Should not be set manually. This is 
+%% done automatically in the dispather.
+%% @hidden
+%%
 set_action(Env,Value) ->
     case lists:keysearch("action_name",1,Env) of
 	{value,_} ->
@@ -87,14 +162,19 @@ set_action(Env,Value) ->
 	    [proplists:property({"action_name", Value})|Env]
     end.
 
-get_value(Key, Env) ->
-    proplists:get_value(Key, Env).
-
-get_value(Key, Env, Default) ->
-    proplists:get_value(Key, Env, Default).
-
-get_all_values(Key, Env) ->
-    proplists:get_all_values(Key, Env).
-
+%% 
+%% @doc Set an Key,Value in the environment.
+%% Used internally
+%% @hidden
 set_value(Key, Val, Env) ->
-    lists:keyreplace(Key, 1, Env, {Key, Val}).
+     lists:keyreplace(Key, 1, Env, {Key, Val}).
+
+%% get_value(Key, Env) ->
+%%     proplists:get_value(Key, Env).
+
+%% get_value(Key, Env, Default) ->
+%%     proplists:get_value(Key, Env, Default).
+
+%% get_all_values(Key, Env) ->
+%%     proplists:get_all_values(Key, Env).
+

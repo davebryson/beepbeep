@@ -1,7 +1,8 @@
-%% This code is adapted from the ewgi project:
+%% @doc This code is adapted from the ewgi project:
 %% http://code.google.com/p/ewgi/
 %% In the future BeepBeep may use the ewgi interface
 %% to support both mochiweb and yaws
+%% @hidden
 -module(mochiweb_env).
 
 -export([setup_environment/1]).
