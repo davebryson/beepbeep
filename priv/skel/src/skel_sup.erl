@@ -41,8 +41,10 @@ init([]) ->
                  {port, 8000}
                 ],
 
+    %% Sets up the BeepBeep environment. Removing any of the below
+    %% will cause something to break.
     BaseDir = skel_deps:get_base_dir(),
-    
+
     Web = {skel_web,
 	   {skel_web, start, [WebConfig]},
 	   permanent, 5000, worker, dynamic},
