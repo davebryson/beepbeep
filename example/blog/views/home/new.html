@@ -1,0 +1,14 @@
+{% extends "../base.html" %}
+{% block content %}
+
+<h2>Add a Post</h2> 
+<form action="/home/create" method="post">
+  Title:<br/> 
+  <input type="text" name="post_title" value="" size="40"/>
+  <br/>
+  <textarea name="post_body" value="" rows="10" cols="40"></textarea>
+  <br/>
+  <input type="submit" name="submit" value="Save"/>&nbsp;|&nbsp;<a href="/">Cancel</a>
+</form>
+
+{% endblock %}

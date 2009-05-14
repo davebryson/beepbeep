@@ -1,0 +1,18 @@
+{% extends "../base.html" %}
+{% block content %}
+ 
+{% if data %} 
+  {% for i in data %}
+   <h2>{{ i.title }}</h2>
+      {{ i.body }}
+      <br/><br/>
+      <i>posted: {{ i.posted }}</i>
+      <br/>
+   {% endfor %}
+      <br/>
+   <a href="/home/new">Add a Post</a>
+{% else %}
+  <b>No</b> posts <a href="/home/new">Add one!</a>
+{% endif %}  
+
+{% endblock %}

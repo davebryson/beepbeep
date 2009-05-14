@@ -96,4 +96,4 @@ You can also implement the before_filter to check requests before the matching "
 called.  Filters that pass should simply return the atom ok, otherwise they should return one
 of the request responses such as {render...} or {redirect..." 
 
-More to come...
+For more information, see the documention and example blog app included with the source code.  And there's a small tutorial on the "Wiki":http://wiki.github.com/davebryson/beepbeep

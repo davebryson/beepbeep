@@ -1,0 +1,3 @@
+{application,'BeepBeep'}.
+{packages,[]}.
+{modules,[beepbeep,beepbeep_args,beepbeep_router]}.

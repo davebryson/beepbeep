@@ -1,0 +1,180 @@
+@title BeepBeep
+@author Dave Bryson
+@copyright Dave Bryson 2008-2009
+
+@doc
+== Contents ==
+{@section Introduction}<br/>
+{@section Creating a new application}<br/>
+{@section Controllers}<br/>
+{@section Return values}<br/>
+{@section Parameters and Session}<br/>
+
+== Introduction ==
+BeepBeep is a simple web application designed to provide a familiar environment for developers
+coming from Rails. Like Rails, if you follow a few conventions, BeepBeep will automatically
+map requests to your controllers and views leaving you to focus on the core of your application. 
+
+Features:
+<ul>
+  <li>Server side session store</li>
+  <li>Automatic mapping of requests to controllers and views</li>
+  <li>Automatic binding of extra path arguments to controller variables</li>
+  <li>Before filter on your controllers</li>
+  <li>Django templates provided by erlydtl</li>
+</ul>
+
+== Creating a new application ==
+
+BeepBeep includes a simple script you can use to generate an application. The script will create the base code,
+directory structure, and a default controller you can use as a starting point.
+
+To create a new application, make sure you are in the root directory of BeepBeep and run:
+
+```
+./script/new_beepbeep.erl [name of app] [destination directory]
+'''
+
+For example to create the app 'blog' in the directory '/home/dave/' you'd enter:
+
+```
+./script/new_beepbeep.erl blog /home/dave
+'''
+
+If you look in the '/home/dave/blog' directory you'll see the application structure along with 
+a default controller called 'home_controller.erl' in the src directory.  Any controllers you create should end with
+'_controller.erl'.  BeepBeep uses to this convention to map requests to your code.
+
+Templates are located in the 'views' directory and any static content such as images, stylesheets, etc... are located
+in the 'www' directory.
+
+Now, to run the default application run first run 'make' and then start the server with:
+
+```
+./start_server.sh
+'''
+
+This will start the webserver and application on port 8000. You can change the port in the '*_sup.erl' file if 
+desired.
+
+Once the server starts go to:
+
+```
+http://localhost:8000/
+'''
+
+to see the default application.
+
+
+== Controllers ==
+
+Most of the code you write will be in controllers.  Controllers are regular Erlang modules. The exception is they
+need to follow a few rules:
+
+<ol>
+  <li>The name of the module must end in '_controller.erl'</li>
+  <li>The module must export and implement two functions: 'handler_request/2' and 'before_filter/0'</li>
+</ol>
+
+The functions 'handle_request/2' are the 'actions' in a controller. For example, a request to:
+
+```
+/login/new
+
+/[controller name]/[function]
+'''
+
+would map to the function:
+
+```
+handle_request("new",[]) ->
+  ...
+'''
+
+The first parameter 'new' is a String used for matching and the second parameter is an array that will automatically
+map any extra components in the path to an Erlang variable. For example:
+
+home_controller.erl:
+
+```
+handle_request("show",[Year]) ->
+  error_logger:info_msg("The year sent is: ~s",[Year]),
+  ...
+
+''' 
+
+would map to the request:
+
+```
+/home/show/2009
+'''
+
+and bind '2009' to the 'Year' variable.
+
+
+The 'before_filter' will run any code you specify 'before' the requested 'handle_request' is run.  This is and
+ideal place for authentication. The before returns two types of results:
+
+<ol>
+  <li>the atom 'ok'. Which means the filter passed or</li>
+  <li>a BeepBeep response tuple</li>
+</ol>
+
+See the Blog example included with the source code in 'example/blog/src/home_controller.erl'.
+ 
+
+== Return values ==
+
+Here are the possible return values from 'handle_request' and 'before_filter':
+
+```
+{render,View,Data}
+'''
+View is a string for the template to use: "/home/index.html"
+Data is an array of tuples to bind in your template: [{name,"dave"}]. This make the key name, and the value "dave"
+available in you Django template.
+
+```
+{render,View,Data,Options}
+'''
+Same as above, except Options is an array of tuples to include in the header. For example:
+
+```
+[{status,201}]
+'''
+
+```
+{text,Content}
+'''
+
+Returns plain text where 'Content' is a String or Binary
+
+```
+{redirect, Url}
+'''
+
+Redirects (302) to the given Url: {redirect,"/"}
+
+```
+{static,File}
+'''
+Render a static file from the 'www' directory: {static,"images/hello.jpg"}
+
+```
+{error,Reason}
+'''
+Sends a status code 500 (server error)
+
+
+Future support will include a JSON response.
+
+== Parameters and Session ==
+
+See the beepbeep_args for the api to work with sessions and parameters.
+
+
+
+
+
+
+    

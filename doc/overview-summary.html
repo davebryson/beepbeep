@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>BeepBeep</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<h1>BeepBeep</h1>
+<p>Copyright © Dave Bryson 2008-2009
+</p>
+<p><b>Authors:</b> Dave Bryson.</p>
+
+<h3><a name="Contents">Contents</a></h3><p>
+<a href="#Introduction">Introduction</a><br>
+<a href="#Creating_a_new_application">Creating a new application</a><br>
+<a href="#Controllers">Controllers</a><br>
+<a href="#Return_values">Return values</a><br>
+<a href="#Parameters_and_Session">Parameters and Session</a><br></p>
+
+<h3><a name="Introduction">Introduction</a></h3><p>
+BeepBeep is a simple web application designed to provide a familiar environment for developers
+coming from Rails. Like Rails, if you follow a few conventions, BeepBeep will automatically
+map requests to your controllers and views leaving you to focus on the core of your application. </p>
+
+Features:
+<ul>
+  <li>Server side session store</li>
+  <li>Automatic mapping of requests to controllers and views</li>
+  <li>Automatic binding of extra path arguments to controller variables</li>
+  <li>Before filter on your controllers</li>
+  <li>Django templates provided by erlydtl</li>
+</ul>
+
+<h3><a name="Creating_a_new_application">Creating a new application</a></h3>
+
+<p>BeepBeep includes a simple script you can use to generate an application. The script will create the base code,
+directory structure, and a default controller you can use as a starting point.</p>
+
+<p>To create a new application, make sure you are in the root directory of BeepBeep and run:</p>
+
+<pre>./script/new_beepbeep.erl [name of app] [destination directory]</pre>
+
+<p>For example to create the app 'blog' in the directory '/home/dave/' you'd enter:</p>
+
+<pre>./script/new_beepbeep.erl blog /home/dave</pre>
+
+<p>If you look in the '/home/dave/blog' directory you'll see the application structure along with 
+a default controller called 'home_controller.erl' in the src directory.  Any controllers you create should end with
+'_controller.erl'.  BeepBeep uses to this convention to map requests to your code.</p>
+
+<p>Templates are located in the 'views' directory and any static content such as images, stylesheets, etc... are located
+in the 'www' directory.</p>
+
+<p>Now, to run the default application run first run 'make' and then start the server with:</p>
+
+<pre>./start_server.sh</pre>
+
+<p>This will start the webserver and application on port 8000. You can change the port in the '*_sup.erl' file if 
+desired.</p>
+
+<p>Once the server starts go to:</p>
+
+<pre>http://localhost:8000/</pre>
+
+<p>to see the default application.</p>
+
+
+<h3><a name="Controllers">Controllers</a></h3>
+
+<p>Most of the code you write will be in controllers.  Controllers are regular Erlang modules. The exception is they
+need to follow a few rules:</p>
+
+<ol>
+  <li>The name of the module must end in '_controller.erl'</li>
+  <li>The module must export and implement two functions: 'handler_request/2' and 'before_filter/0'</li>
+</ol>
+
+<p>The functions 'handle_request/2' are the 'actions' in a controller. For example, a request to:</p>
+
+<pre>/login/new
+
+/[controller name]/[function]</pre>
+
+<p>would map to the function:</p>
+
+<pre>handle_request("new",[]) -&gt;
+  ...</pre>
+
+<p>The first parameter 'new' is a String used for matching and the second parameter is an array that will automatically
+map any extra components in the path to an Erlang variable. For example:</p>
+
+<p>home_controller.erl:</p>
+
+<pre>handle_request("show",[Year]) -&gt;
+  error_logger:info_msg("The year sent is: ~s",[Year]),
+  ...</pre> 
+
+<p>would map to the request:</p>
+
+<pre>/home/show/2009</pre>
+
+<p>and bind '2009' to the 'Year' variable.</p>
+
+
+<p>The 'before_filter' will run any code you specify 'before' the requested 'handle_request' is run.  This is and
+ideal place for authentication. The before returns two types of results:</p>
+
+<ol>
+  <li>the atom 'ok'. Which means the filter passed or</li>
+  <li>a BeepBeep response tuple</li>
+</ol>
+
+<p>See the Blog example included with the source code in 'example/blog/src/home_controller.erl'.</p>
+ 
+
+<h3><a name="Return_values">Return values</a></h3>
+
+<p>Here are the possible return values from 'handle_request' and 'before_filter':</p>
+
+<pre>{render,View,Data}</pre><p>
+View is a string for the template to use: "/home/index.html"
+Data is an array of tuples to bind in your template: [{name,"dave"}]. This make the key name, and the value "dave"
+available in you Django template.</p>
+
+<pre>{render,View,Data,Options}</pre><p>
+Same as above, except Options is an array of tuples to include in the header. For example:</p>
+
+<pre>[{status,201}]</pre>
+
+<pre>{text,Content}</pre>
+
+<p>Returns plain text where 'Content' is a String or Binary</p>
+
+<pre>{redirect, Url}</pre>
+
+<p>Redirects (302) to the given Url: {redirect,"/"}</p>
+
+<pre>{static,File}</pre><p>
+Render a static file from the 'www' directory: {static,"images/hello.jpg"}</p>
+
+<pre>{error,Reason}</pre><p>
+Sends a status code 500 (server error)</p>
+
+
+<p>Future support will include a JSON response.</p>
+
+<h3><a name="Parameters_and_Session">Parameters and Session</a></h3>
+
+<p>See the beepbeep_args for the api to work with sessions and parameters.</p>
+
+
+
+
+
+
+    
+<hr>
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, May 14 2009, 14:08:00.</i></p>
+</body>
+</html>
