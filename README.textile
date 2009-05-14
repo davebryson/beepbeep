@@ -1,12 +1,8 @@
 h2. BeepBeep a simple web application for Erlang
 
-BeepBeep is a simple Web Application framework for Erlang inspired by Rails and Merb. It follows the 
-principle of convention over configuration - meaning if you follow the code structure layout and a few
-rules when building your app, it'll require no extra work on you behalf to map Url requests to your 
-Controllers and Views.
+BeepBeep is a simple Web Application framework for Erlang inspired by Rails and Merb. It follows the principle of convention over configuration - meaning if you follow the code structure layout and a few rules when building your app, it'll require no extra work on you behalf to map Url requests to your Controllers and Views.
 
-BeepBeep is built on "MochiWeb":http://code.google.com/p/mochiweb/ and "ErlyDTL":http://code.google.com/p/erlydtl,
-providing a super fast web server and the abiity to define your templates with the Django template language.
+BeepBeep is built on "MochiWeb":http://code.google.com/p/mochiweb/ and "ErlyDTL":http://code.google.com/p/erlydtl, providing a super fast web server and the abiity to define your templates with the Django template language.
 
 h3. Features
 	
@@ -23,6 +19,7 @@ h3. Getting Started
  # generate a new web application by running  ./script/new_beep.erl YouAppName "DestinationDirectory
 
 This will create a web app with everything you need. It includes a Sample controller (main_controller.erl).
+
 To run the sample:
 
  # cd into the new application's directory you created above
@@ -39,9 +36,9 @@ handle_request(Action,Params)
 </code>
 </pre>
 
-where Action is a string that will match to the request in the Url and
-Params is an Array of optional parameters that will be passed to variables
-in your controller.
+Where Action is a string that will match to the request in the Url.
+
+And Params is an Array of optional parameters that will be passed to variables in your controller.
 
 BeepBeep will automatically map Url requests to controller and functions (or actions). For example a request to "/hello/show" would map to the "hello_controller" and invoke the "handle_request("show",[])" function. 
 
@@ -71,9 +68,7 @@ before_filter(Params) ->
  </code>
 </pre>
 
-From "handle_request" we return a tuple that tells the framework what view to use. Views
-are located in the views directory. In our example we'll use the view located in the 
-subdirectory "hello" and the file "show.html"
+From "handle_request" we return a tuple that tells the framework what view to use. Views are located in the views directory. In our example we'll use the view located in the subdirectory "hello" and the file "show.html"
 
 Here's an example of the "show.html" template:
 
@@ -86,14 +81,10 @@ Which will result in:
 <h2>Hello from BeepBeep</h2>
 </code></pre> 
 
-The "name" key set in the controller is passed to the template and expanded using the Django format
-via erlyDTL.
+The "name" key set in the controller is passed to the template and expanded using the Django format via erlyDTL.
 
-This approach provides a clean separation of the erlang logic in the controller and the html code in
-the template.
+This approach provides a clean separation of the erlang logic in the controller and the html code in the template.
 
-You can also implement the before_filter to check requests before the matching "handle_request" is
-called.  Filters that pass should simply return the atom ok, otherwise they should return one
-of the request responses such as {render...} or {redirect..." 
+You can also implement the before_filter to check requests before the matching "handle_request" is called.  Filters that pass should simply return the atom ok, otherwise they should return one of the request responses such as {render...} or {redirect..." 
 
 For more information, see the documention and example blog app included with the source code.  And there's a small tutorial on the "Wiki":http://wiki.github.com/davebryson/beepbeep
