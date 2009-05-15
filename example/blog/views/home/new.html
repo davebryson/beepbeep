@@ -1,6 +1,8 @@
 {% extends "../base.html" %}
 {% block content %}
 
+{% include "flash.html" %}
+
 <h2>Add a Post</h2> 
 <form action="/home/create" method="post">
   Title:<br/> 

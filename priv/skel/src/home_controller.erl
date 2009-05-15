@@ -11,6 +11,9 @@ handle_request("index",[]) ->
 handle_request("show",[Year]) ->
     Sid = beepbeep_args:get_session_id(Env),
     Name = beepbeep_args:get_param("name",Env),
+
+    beepbeep_args:flash({notice,"Example of a flash message between actions. See flash.html!"},Env),
+    
     {render,"home/show.html",[{year,Year},{sid,Sid},{name,Name}]}.
 
 

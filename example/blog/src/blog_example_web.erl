@@ -34,13 +34,13 @@ loop(Req) ->
     %% {error,_} 
     case beepbeep:dispatch(Env) of
 	{render,View,Data} ->
-	    {ok,Content} = render_template(View,Data),
+	    {ok,Content} = render_template(View,Data,Env),
 	    Req:respond({200,
 			 [{"Content-Type","text/html"}|[get_cookie(Env)]],
 			 Content});
 	{render,View,Data,Options} ->
 	    {Status,ContentType,Headers} = extract_options(Options),
-	    {ok,Content} = render_template(View,Data),
+	    {ok,Content} = render_template(View,Data,Env),
 	    Req:respond({Status,
 			 [{"Content-Type",ContentType}|[get_cookie(Env)|Headers]],
 			 Content});
@@ -60,9 +60,11 @@ loop(Req) ->
 	    Req:respond({500,[],"Server Error"})
     end.
 
-render_template(ViewFile,Data) -> 
+render_template(ViewFile,Data,Env) ->
+    %% Copy flash into Data and clear from Session
+    Data1 = set_and_clear_flash(Data,Env),
     FullPathToFile = filename:join([blog_example_deps:local_path(["views"]),ViewFile]),
-    beepbeep:render_template(FullPathToFile,ViewFile,Data).
+    beepbeep:render_template(FullPathToFile,ViewFile,Data1).
 
 extract_options(Options) ->
     {proplists:get_value(status,Options,200),
@@ -71,6 +73,13 @@ extract_options(Options) ->
 
 get_cookie(Env) ->
     mochiweb_cookies:cookie(?BEEPBEEP_SID,beepbeep_args:get_session_id(Env),[{path, "/"}]).
+
+set_and_clear_flash(Data,Env) ->
+    case beepbeep_args:get_flash(Env) of
+	none -> Data;
+	Flash ->
+	    [{flash,Flash}|Data]
+    end.
 
 setup_session(Req,Env) ->
     SessionKey = beepbeep_session_server:new_session(Req:get_cookie_value(?BEEPBEEP_SID)),

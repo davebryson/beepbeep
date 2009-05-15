@@ -1,0 +1,5 @@
+{% if flash %}
+  {% for k,message in flash %}
+    <p>{{ message }}</p>
+  {% endfor %}
+{% endif %}

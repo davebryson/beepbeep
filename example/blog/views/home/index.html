@@ -1,6 +1,8 @@
 {% extends "../base.html" %}
 {% block content %}
- 
+
+{% include "flash.html" %}
+
 {% if data %} 
   {% for i in data %}
    <h2>{{ i.title }}</h2>

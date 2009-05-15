@@ -23,7 +23,10 @@
 	 get_session_data/2,
 	 get_all_session_data/1,
 	 get_action/1,
-	 set_action/2]).
+	 set_action/2,
+	 flash/2,
+	 get_flash/1]).
+
 -author('Dave Bryson <http://weblog.miceda.org>').
 
 %%
@@ -102,7 +105,33 @@ get_all_headers(Env) ->
 %%
 get_param(Key,Env) ->
     Params = proplists:get_value("beepbeep.data",Env),
-    proplists:get_value(Key,Params,"?").
+    proplists:get_value(Key,Params).
+
+%%
+%% @doc Set a 'flash' message for use in your template. All flash message are wrapped in a List
+%% 
+flash(Term,Env) ->
+    Flash = case get_session_data(beepbeep_flash,Env) of
+		undefined ->
+		    [Term];
+		ExistingFlash ->
+		    [Term|ExistingFlash]
+	    end,
+    set_session_data(beepbeep_flash,Flash,Env).
+
+
+%% Get and clear the flash
+get_flash(Env) ->
+    Sid = get_session_id(Env),
+    case get_session_data(beepbeep_flash,Env) of
+	undefined ->
+	    %% No flash data
+	    none;
+	Data ->
+	    beepbeep_session_server:remove_session_data(Sid,beepbeep_flash),
+	    Data
+    end.
+
 
 %%
 %% @doc Get the current session id

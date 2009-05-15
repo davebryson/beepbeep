@@ -20,8 +20,20 @@ handle_request("new",[]) ->
 handle_request("create",[]) ->
     Title = beepbeep_args:get_param("post_title",Env),
     Body = beepbeep_args:get_param("post_body",Env),
-    blog_database:insert(Title,Body),
-    {redirect,"/"}.
+
+    %% Example of validation. Require a Title
+    if 
+	Title =:= undefined orelse length(Title) =:= 0 ->
+	    %% Blank
+	    %% Set flash message for the template
+	    beepbeep_args:flash({notice,"Title Required!"},Env),
+	    {redirect,"/home/new"};
+	true ->
+	    %% Set flash message for the template
+	    beepbeep_args:flash({notice,"Post Created!"},Env),
+	    blog_database:insert(Title,Body),
+	    {redirect,"/"}
+    end.
 
 %% Shows how to filter on certain actions in this controller
 before_filter() ->
