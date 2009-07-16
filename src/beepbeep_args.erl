@@ -21,6 +21,7 @@
 	 set_session_id/2,
 	 set_session_data/3,
 	 get_session_data/2,
+	 remove_session_data/2,
 	 get_all_session_data/1,
 	 get_action/1,
 	 set_action/2,
@@ -171,6 +172,14 @@ get_all_session_data(Env) ->
 %%
 get_session_data(Key,Env) ->
     proplists:get_value(Key,get_all_session_data(Env)).
+
+
+%%
+%% @doc Remove a Key,Value in the session
+%%
+remove_session_data(Key,Env) ->
+    Sid = get_session_id(Env),
+    beepbeep_session_server:remove_session_data(Sid,Key).
 
 %%
 %% @doc Return the current requested action
