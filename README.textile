@@ -4,7 +4,8 @@ BeepBeep is a simple Web Application framework for Erlang inspired by Rails and 
 
 BeepBeep is built on "MochiWeb":http://code.google.com/p/mochiweb/ and "ErlyDTL":http://code.google.com/p/erlydtl, providing a super fast web server and the abiity to define your templates with the Django template language.
 
-Discussion Group? Well, we had one (actually 2) but Google keeps deleting them as soon as I create them.
+
+"Google Group":http://groups.google.com/group/beepbeep-web-framework
 
 h3. Features
 	
