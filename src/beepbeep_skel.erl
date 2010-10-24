@@ -18,19 +18,44 @@ skelcopy(DestDir, InName) ->
                    N + 1
            end,
     skelcopy(src(), DestDir, Name, LDst),
-    ok = file:make_symlink(
-	   filename:join(filename:dirname(code:which(?MODULE)), ".."),
-	   filename:join([DestDir, Name, "deps", "beepbeep-src"])),
-    ok = file:make_symlink(
-	   filename:join(filename:dirname(code:which(?MODULE)), "../deps/erlydtl"),
-	   filename:join([DestDir, Name, "deps", "erlydtl-src"])),
-    ok = file:make_symlink(
-	   filename:join(filename:dirname(code:which(?MODULE)), "../deps/mochiweb"),
-	   filename:join([DestDir, Name, "deps", "mochiweb-src"])).
+    %
+    {ok, Cwd} = file:get_cwd(),
+    mk_win_dir_syslink(Name, "beepbeep-src", Cwd ++ "/../"),
+    mk_win_dir_syslink(Name, "erlydtl-src", Cwd ++ "/../deps/erlydtl"),
+    mk_win_dir_syslink(Name, "mochiweb-src", Cwd ++ "/../deps/mochiweb"),
+    mk_bat_file(Name, Cwd).
+
+%    ok = file:make_symlink(
+%	   filename:join(filename:dirname(code:which(?MODULE)), ".."),
+%	   filename:join([DestDir, Name, "deps", "beepbeep-src"])),
+%    ok = file:make_symlink(
+%	   filename:join(filename:dirname(code:which(?MODULE)), "../deps/erlydtl"),
+%	   filename:join([DestDir, Name, "deps", "erlydtl-src"])),
+%    ok = file:make_symlink(
+%	   filename:join(filename:dirname(code:which(?MODULE)), "../deps/mochiweb"),
+%	   filename:join([DestDir, Name, "deps", "mochiweb-src"])).
     
     
 
 %% Internal API
+
+%% @doc Make symbolik link in current directory on windows vista or highter
+mk_win_dir_syslink(ProjectName, LinkName,DestLink) ->
+%    io:format("~nname:~p~ntarget:~p~n~n", [LinkName, DestLink]),
+    S = (list_to_atom("cd "++ ProjectName ++ "//deps" ++ "& mklink /D " ++ LinkName ++ " " ++ "\"" ++ DestLink ++ "\"")),
+%    io:format("~n~p~n", [S]),
+    os:cmd(S),
+    ok.
+
+%% @doc make .bat file to start dev server on windows
+mk_bat_file(ProjectName, Cwd) ->
+    Name = "start-server.bat",
+    Content = "make \n"
+"start werl -pa ebin deps/*/ebin -boot start_sasl -s " ++ ProjectName ++ " -s \n"
+"reloader ",
+    file:set_cwd(Cwd ++ "//" ++ ProjectName),
+    {ok, IODevice} = file:open(Name, [write]), file:write(IODevice, Content), file:close(IODevice),
+    ok.
 
 src() ->
     Dir = filename:dirname(code:which(?MODULE)),
