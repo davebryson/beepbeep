@@ -19,23 +19,24 @@ skelcopy(DestDir, InName) ->
            end,
     skelcopy(src(), DestDir, Name, LDst),
     %
-    {ok, Cwd} = file:get_cwd(),
-    mk_win_dir_syslink(Name, "beepbeep-src", Cwd ++ "/../"),
-    mk_win_dir_syslink(Name, "erlydtl-src", Cwd ++ "/../deps/erlydtl"),
-    mk_win_dir_syslink(Name, "mochiweb-src", Cwd ++ "/../deps/mochiweb"),
-    mk_bat_file(Name, Cwd).
-
-%    ok = file:make_symlink(
-%	   filename:join(filename:dirname(code:which(?MODULE)), ".."),
-%	   filename:join([DestDir, Name, "deps", "beepbeep-src"])),
-%    ok = file:make_symlink(
-%	   filename:join(filename:dirname(code:which(?MODULE)), "../deps/erlydtl"),
-%	   filename:join([DestDir, Name, "deps", "erlydtl-src"])),
-%    ok = file:make_symlink(
-%	   filename:join(filename:dirname(code:which(?MODULE)), "../deps/mochiweb"),
-%	   filename:join([DestDir, Name, "deps", "mochiweb-src"])).
-    
-    
+    case os:type() of
+        {win32,_} ->
+            {ok, Cwd} = file:get_cwd(),
+            mk_win_dir_syslink(Name, "beepbeep-src", Cwd ++ "/../"),
+            mk_win_dir_syslink(Name, "erlydtl-src", Cwd ++ "/../deps/erlydtl"),
+            mk_win_dir_syslink(Name, "mochiweb-src", Cwd ++ "/../deps/mochiweb"),
+            mk_bat_file(Name, Cwd);
+        {unix,_} ->
+            ok = file:make_symlink(
+               filename:join(filename:dirname(code:which(?MODULE)), ".."),
+               filename:join([DestDir, Name, "deps", "beepbeep-src"])),
+            ok = file:make_symlink(
+               filename:join(filename:dirname(code:which(?MODULE)), "../deps/erlydtl"),
+               filename:join([DestDir, Name, "deps", "erlydtl-src"])),
+            ok = file:make_symlink(
+               filename:join(filename:dirname(code:which(?MODULE)), "../deps/mochiweb"),
+               filename:join([DestDir, Name, "deps", "mochiweb-src"]))
+    end.
 
 %% Internal API
 
