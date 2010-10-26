@@ -52,8 +52,7 @@ mk_win_dir_syslink(ProjectName, LinkName, DestDir, LinkTarget) ->
 mk_bat_file(ProjectName, DestDir) ->
     Name = "start-server.bat",
     Content = "make \n"
-"start werl -pa ebin deps/*/ebin -boot start_sasl -s " ++ ProjectName ++ " -s \n"
-"reloader ",
+"start werl -pa ebin deps/*/ebin -boot start_sasl -s " ++ ProjectName ++ " -s reloader",
     file:set_cwd(DestDir ++ "//" ++ ProjectName),
     {ok, IODevice} = file:open(Name, [write]), file:write(IODevice, Content), file:close(IODevice),
     ok.
