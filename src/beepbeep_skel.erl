@@ -22,10 +22,10 @@ skelcopy(DestDir, InName) ->
     case os:type() of
         {win32,_} ->
             {ok, Cwd} = file:get_cwd(),
-            mk_win_dir_syslink(Name, "beepbeep-src", Cwd ++ "/../"),
-            mk_win_dir_syslink(Name, "erlydtl-src", Cwd ++ "/../deps/erlydtl"),
-            mk_win_dir_syslink(Name, "mochiweb-src", Cwd ++ "/../deps/mochiweb"),
-            mk_bat_file(Name, Cwd);
+            mk_win_dir_syslink(Name, "beepbeep-src", DestDir, Cwd ++ "/../"),
+            mk_win_dir_syslink(Name, "erlydtl-src", DestDir, Cwd ++ "/../deps/erlydtl"),
+            mk_win_dir_syslink(Name, "mochiweb-src", DestDir,  Cwd ++ "/../deps/mochiweb"),
+            mk_bat_file(Name, DestDir);
         {unix,_} ->
             ok = file:make_symlink(
                filename:join(filename:dirname(code:which(?MODULE)), ".."),
@@ -41,20 +41,20 @@ skelcopy(DestDir, InName) ->
 %% Internal API
 
 %% @doc Make symbolik link in current directory on windows vista or highter
-mk_win_dir_syslink(ProjectName, LinkName,DestLink) ->
-%    io:format("~nname:~p~ntarget:~p~n~n", [LinkName, DestLink]),
-    S = (list_to_atom("cd "++ ProjectName ++ "//deps" ++ "& mklink /D " ++ LinkName ++ " " ++ "\"" ++ DestLink ++ "\"")),
-%    io:format("~n~p~n", [S]),
+mk_win_dir_syslink(ProjectName, LinkName, DestDir, LinkTarget) ->
+    S = (list_to_atom("cd "++ filename:join([DestDir, ProjectName, "deps"]) ++ "& mklink /D " ++ LinkName ++ " \"" ++ LinkTarget ++ "\"")),
     os:cmd(S),
+    %io:format("~nname:~p~ntarget:~p~n~n", [LinkName, DestTarget]),
+    %io:format("~n~p~n", [S]),
     ok.
 
 %% @doc make .bat file to start dev server on windows
-mk_bat_file(ProjectName, Cwd) ->
+mk_bat_file(ProjectName, DestDir) ->
     Name = "start-server.bat",
     Content = "make \n"
 "start werl -pa ebin deps/*/ebin -boot start_sasl -s " ++ ProjectName ++ " -s \n"
 "reloader ",
-    file:set_cwd(Cwd ++ "//" ++ ProjectName),
+    file:set_cwd(DestDir ++ "//" ++ ProjectName),
     {ok, IODevice} = file:open(Name, [write]), file:write(IODevice, Content), file:close(IODevice),
     ok.
 

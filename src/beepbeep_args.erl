@@ -34,6 +34,7 @@
 %% @doc Return the Path
 %% 
 path(Env) ->
+ok,
     proplists:get_value("PATH_INFO",Env).
 
 %%
