@@ -75,7 +75,10 @@ parse_element(beepbeep_params,Req) ->
 	Method when Method =:= 'GET'; Method =:= 'HEAD' ->
 	    Req:parse_qs(); 
 	_ ->
-	    Req:parse_post()
+	    case check_multipart_form_data(Req) of
+                true -> mochiweb_multipart:parse_form(Req);
+                false -> Req:parse_post()
+	    end
     end;
 parse_element(content_type, Req) ->
     Req:get_header_value("content-type");
@@ -106,3 +109,9 @@ parse_headers(Req) ->
                 mochiweb_headers:to_list(Hdrs)).
     
 			       
+check_multipart_form_data(Req) ->
+    ContentType = Req:get_header_value("content-type"),
+    case re:run(ContentType, "multipart/form-data") of
+       {match, _} -> true;
+       nomatch -> false
+    end.
